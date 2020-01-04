@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  font-family: 'Arial', 'Roboto', sans-serif;
+  background-color: black;
+  font-size: 16px;
+}
+
+.renderer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
