@@ -3,7 +3,7 @@ import { DisplayFont } from 'main/com/DisplayFont';
 export class TextStyle {
   font = new DisplayFont().font;
   wrapWidth?: number;
-  // imageSmoothingEnabled = false;
+  imageSmoothingEnabled = true;
   direction: CanvasDirection = 'inherit';
   textAlign: CanvasTextAlign = 'left';
   textBaseline: CanvasTextBaseline = 'top';

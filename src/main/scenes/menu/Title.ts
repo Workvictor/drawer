@@ -6,10 +6,5 @@ export class Title extends DisplayText {
       wrapWidth: 0,
       text: 'Main menu'
     });
-
-    this.clickable = true;
-    this.onClick = () => {
-      console.log('Title clicked !!!');
-    };
   }
 }

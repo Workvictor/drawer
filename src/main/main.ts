@@ -4,9 +4,13 @@ import { SceneController } from 'main/SceneController';
 import { Renderer } from 'main/com/Renderer';
 import { TextStyle } from 'main/com/TextStyle';
 import { DisplayFont } from 'main/com/DisplayFont';
-import { Vector2 } from 'main/com/Vector2';
+import { MouseController } from 'main/com/MouseController';
 
-export function main() {
+const mouseController = new MouseController();
+
+export { mouseController };
+
+export function main(root: HTMLElement) {
   const displayFont = new DisplayFont();
   const textStyle = new TextStyle({
     font: displayFont.font
@@ -17,7 +21,7 @@ export function main() {
     displayFont
   };
 
-  const sceneController = new SceneController(new Renderer());
+  const sceneController = new SceneController(new Renderer(), root);
   sceneController.activeScene = 'menu';
   sceneController.start();
 

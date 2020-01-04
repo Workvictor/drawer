@@ -3,29 +3,29 @@ import { Renderer } from './Renderer';
 
 export class Scene {
   constructor(name: Scenes, w: number, h: number) {
-    this.width = w;
-    this.height = h;
     this.name = name;
     this.renderer = new Renderer(w, h);
   }
 
-  renderer: Renderer;
+  protected renderer: Renderer;
 
   name: Scenes;
 
-  width: number;
+  get width() {
+    return this.renderer.width;
+  }
 
-  height: number;
+  get height() {
+    return this.renderer.height;
+  }
 
   onLoad = () => {};
 
-  onResize = (w: number, h: number) => {
-    this.width = w;
-    this.height = h;
+  resize = (w: number, h: number) => {
     this.renderer.resize(w, h);
   };
 
-  onUpdate = (t: number) => {};
+  update = (t: number) => {};
 
   draw = (ctx: CanvasRenderingContext2D) => {
     ctx.drawImage(this.renderer.canvas, 0, 0);

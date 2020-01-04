@@ -5,9 +5,9 @@ import { scenes } from 'main/scenes';
 export type Scenes = 'menu' | 'options' | 'game';
 
 export class SceneController {
-  constructor(renderer: Renderer) {
+  constructor(renderer: Renderer, root: HTMLElement = document.body) {
     this._renderer = renderer;
-    this.initRenderer();
+    this.initRenderer(root);
 
     // TODO load scene as ES6 module
     scenes.forEach(IScene => {
@@ -41,13 +41,13 @@ export class SceneController {
     // TODO load scene as ES6 module
   };
 
-  initRenderer = () => {
+  initRenderer = (root: HTMLElement) => {
     this._renderer.ctx.canvas.classList.add('renderer');
-    document.body.appendChild(this._renderer.ctx.canvas);
+    root.appendChild(this._renderer.ctx.canvas);
     const resize = () => {
       this._renderer.resize(window.innerWidth, window.innerHeight);
       this._scenes.forEach(scene => {
-        scene.onResize(window.innerWidth, window.innerHeight);
+        scene.resize(window.innerWidth, window.innerHeight);
       });
     };
     window.addEventListener('resize', resize);
@@ -63,9 +63,8 @@ export class SceneController {
   };
 
   update = (t?: number) => {
-    this._renderer.clear();
     if (this._scene && t) {
-      this._scene.onUpdate(t);
+      this._scene.update(t);
       this._scene.draw(this._renderer.ctx);
     }
     if (this._isRunning) {

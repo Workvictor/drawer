@@ -57,7 +57,10 @@ export class Renderer {
   }
 
   resize = (width: number, height: number) => {
-    Object.assign(this.canvas, { width, height });
+    Object.assign(this.canvas, {
+      width: Math.floor(width / 2) * 2,
+      height: Math.floor(height / 2) * 2
+    });
     this.restoreStyle();
   };
 
@@ -79,7 +82,9 @@ export class Renderer {
     height = this.height,
     textStyle: TextStyle = this._textStyle
   ) => {
-    const ctx = createCanvas(width, height).getContext('2d')!;
+    const ctx = createCanvas(width, height).getContext(
+      '2d'
+    )!;
     Object.assign(ctx, textStyle);
     return ctx;
   };

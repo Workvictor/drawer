@@ -5,8 +5,8 @@ interface IDisplayText {
   wrapWidth: number;
   fontSize?: number;
   linePadding?: number;
-  textPadding?: number;
-  color?: string | CanvasGradient | CanvasPattern,
+  textPadding?: [number] | [number, number];
+  color?: string | CanvasGradient | CanvasPattern;
 }
 
 export class DisplayText extends DisplayObject {
@@ -19,8 +19,8 @@ export class DisplayText extends DisplayObject {
     const {
       text,
       fontSize = this.renderer.fontSize,
-      linePadding = 4,
-      textPadding = 4,
+      linePadding = 0,
+      textPadding = [0],
       color = this.renderer.ctx.fillStyle,
       wrapWidth
     } = props;
@@ -30,11 +30,11 @@ export class DisplayText extends DisplayObject {
     // one line text
     if (wrapWidth === 0) {
       this.renderer.resize(
-        textPadding * 2 + this.renderer.ctx.measureText(text).width,
-        textPadding * 2 + fontSize
+        textPadding[0] * 2 + Math.floor(this.renderer.ctx.measureText(text).width),
+        (textPadding[1] || textPadding[0]) * 2 + fontSize
       );
-      this.onResize(this.renderer.width, this.renderer.height);
-      this.renderer.ctx.fillText(text, textPadding, textPadding);
+      this.resize(this.renderer.width, this.renderer.height);
+      this.renderer.ctx.fillText(text, textPadding[0], textPadding[1] || textPadding[0]);
       return;
     }
 
@@ -61,12 +61,14 @@ export class DisplayText extends DisplayObject {
       i++;
     }
 
-
     this.renderer.resize(wrapWidth, lines.length * lineHeight - linePadding);
-    this.onResize(this.renderer.width, this.renderer.height);
+    this.resize(this.renderer.width, this.renderer.height);
     lines.forEach((line, index) => {
-      this.renderer.ctx.fillText(line, textPadding, textPadding + index * lineHeight);
+      this.renderer.ctx.fillText(
+        line,
+        textPadding[0],
+        textPadding[1] || textPadding[0] + index * lineHeight
+      );
     });
-
   };
 }

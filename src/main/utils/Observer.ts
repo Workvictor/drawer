@@ -10,6 +10,10 @@ export class Observer<Data> {
     return this;
   };
 
+  destroy = () => {
+    this.observers = [];
+  };
+
   unsubscribe = (fn: Subscriber<Data>) => {
     this.observers = this.observers.filter(i => i !== fn);
     return this;
