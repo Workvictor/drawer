@@ -4,6 +4,7 @@ import { Observer } from 'main/utils/Observer';
 export class MouseController {
   constructor() {
     window.addEventListener('mousemove', this._onMove);
+    window.addEventListener('mousedown', this._onMouseDown);
     window.addEventListener('click', this._onClick);
   }
 
@@ -15,11 +16,14 @@ export class MouseController {
 
   private _move = new Observer<Vector2>();
 
+  private _touch = new Observer<Vector2>();
+
   private _click = new Observer<Vector2>();
 
   get on() {
     return {
       move: this._move,
+      touch: this._touch,
       click: this._click
     };
   }
@@ -35,6 +39,10 @@ export class MouseController {
 
   private _onClick = this._eventProxy(pos => {
     this.on.click.broadcast(pos);
+  });
+
+  private _onMouseDown = this._eventProxy(pos => {
+    this.on.touch.broadcast(pos);
   });
 
   private _onMove = this._eventProxy(pos => {

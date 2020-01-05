@@ -1,7 +1,12 @@
 import { Renderer } from 'main/com/Renderer';
 import { Vector2 } from 'main/com/Vector2';
 
-type PivotPosition = 'center' | 'top-center' | 'top-left' | 'top-right';
+type PivotPosition =
+  | 'center'
+  | 'top-center'
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-center';
 
 export class DisplayObject {
   constructor(w: number, h: number) {
@@ -84,10 +89,16 @@ export class DisplayObject {
     });
   };
 
-  addChild = (child: DisplayObject) => {
+  addChild = (...children: DisplayObject[]) => {
+    children.forEach(child => {
+      child.setParent(this);
+      this._children.push(child);
+    });
+    // if (Array.isArray(children)) {
+    // }
     this._shouldUpdate = true;
-    child.setParent(this);
-    this._children.push(child);
+    // children.setParent(this);
+    // this._children.push(children);
   };
 
   /**
@@ -118,24 +129,39 @@ export class DisplayObject {
 
   private _position: Vector2 = new Vector2(0, 0);
 
-  get position() {
-    const getOffset = () => {
-      switch (this._pivot) {
-        case 'top-right':
-          return new Vector2(-this.width, 0);
-        case 'top-center':
-          return new Vector2(-this.width / 2, 0);
-        case 'top-left':
-          return new Vector2(0, 0);
-        default:
-          // center
-          return new Vector2(-this.width / 2, -this.height / 2);
-      }
-    };
-    const offset = getOffset();
+  getBoundsPosition = (pivot: PivotPosition) => {
+    const pivotPosition = this._pivotPosition(pivot);
     return new Vector2(
-      this._position.x + offset.x,
-      this._position.y + offset.y
+      this._position.x + pivotPosition.x,
+      this._position.y + pivotPosition.y
+    );
+  };
+
+  private _pivotPosition = (pivot: PivotPosition) => {
+    switch (pivot) {
+      case 'top-right':
+        return new Vector2(this.width, 0);
+      case 'top-center':
+        return new Vector2(this.width / 2, 0);
+      case 'top-left':
+        return new Vector2(0, 0);
+      case 'bottom-center':
+        return new Vector2(this.width / 2, this.height);
+      default:
+        // center
+        return new Vector2(this.width / 2, this.height / 2);
+    }
+  };
+
+  get bottom() {
+    return this.getBoundsPosition('bottom-center')
+  }
+
+  get position() {
+    const pivotPosition = this._pivotPosition(this._pivot);
+    return new Vector2(
+      this._position.x - pivotPosition.x,
+      this._position.y - pivotPosition.y
     );
   }
 

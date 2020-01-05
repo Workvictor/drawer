@@ -5,10 +5,13 @@ import { Renderer } from 'main/com/Renderer';
 import { TextStyle } from 'main/com/TextStyle';
 import { DisplayFont } from 'main/com/DisplayFont';
 import { MouseController } from 'main/com/MouseController';
+import { Atlas } from 'main/atlas/Atlas';
 
 const mouseController = new MouseController();
 
-export { mouseController };
+const atlas = new Atlas();
+
+export { mouseController, atlas };
 
 export function main(root: HTMLElement) {
   const displayFont = new DisplayFont();
@@ -22,8 +25,14 @@ export function main(root: HTMLElement) {
   };
 
   const sceneController = new SceneController(new Renderer(), root);
-  sceneController.activeScene = 'menu';
+  sceneController.activeScene = 'loading';
   sceneController.start();
+
+  atlas.load('buttons').then(()=>{
+    console.table(atlas.elements);
+    sceneController.activeScene = 'menu';
+  });
+
 
   // TODO make InputController class
   const cheatcode = 'cheatcode';

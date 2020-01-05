@@ -1,7 +1,6 @@
 import { createCanvas } from 'main/utils/createCanvas';
 import { TextStyle } from 'main/com/TextStyle';
 import { DisplayFont } from 'main/com/DisplayFont';
-import { Vector2 } from 'main/com/Vector2';
 
 export class Renderer {
   constructor(
@@ -37,24 +36,6 @@ export class Renderer {
     this.ctx.strokeRect(0, 0, this.width, this.height);
     return this;
   };
-
-  // TODO move to utils
-  getPosition(
-    position: 'center' | 'top-center' | 'top-left' | 'top-right',
-    offset: Vector2 = new Vector2()
-  ): [number, number] {
-    switch (position) {
-      case 'center':
-        return new Vector2(this.width / 2, this.height / 2).setOffset(offset)
-          .xy;
-      case 'top-right':
-        return new Vector2(this.width, 0).setOffset(offset).xy;
-      case 'top-center':
-        return new Vector2(this.width / 2, 0).setOffset(offset).xy;
-      default:
-        return new Vector2().setOffset(offset).xy;
-    }
-  }
 
   resize = (width: number, height: number) => {
     Object.assign(this.canvas, {

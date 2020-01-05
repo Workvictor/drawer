@@ -2,7 +2,7 @@ import { Renderer } from 'main/com/Renderer';
 import { Scene } from 'main/com/Scene';
 import { scenes } from 'main/scenes';
 
-export type Scenes = 'menu' | 'options' | 'game';
+export type Scenes = 'loading' | 'menu' | 'options' | 'game';
 
 export class SceneController {
   constructor(renderer: Renderer, root: HTMLElement = document.body) {
@@ -27,13 +27,14 @@ export class SceneController {
 
   private _rafID = 0;
 
-  private _activeScene: Scenes = 'menu';
+  private _activeScene?: Scenes;
 
   set activeScene(scene: Scenes) {
     this._activeScene = scene;
     this._scene = this._scenes.find(item => item.name === this._activeScene);
     if (this._scene) {
       this._scene.onLoad();
+      this._scene.init();
     }
   }
 

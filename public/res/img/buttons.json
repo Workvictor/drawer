@@ -1,0 +1,28 @@
+{
+  "frames": {
+    "buttonHover.png": {
+      "frame": { "x": 0, "y": 0, "w": 292, "h": 98 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 292, "h": 98 },
+      "sourceSize": { "w": 292, "h": 98 },
+      "anchor": { "x": 0.5, "y": 0.5 }
+    },
+    "buttonNormal.png": {
+      "frame": { "x": 292, "y": 0, "w": 292, "h": 98 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 292, "h": 98 },
+      "sourceSize": { "w": 292, "h": 98 },
+      "anchor": { "x": 0.5, "y": 0.5 }
+    },
+    "buttonPressed.png": {
+      "frame": { "x": 584, "y": 0, "w": 292, "h": 98 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 292, "h": 98 },
+      "sourceSize": { "w": 292, "h": 98 },
+      "anchor": { "x": 0.5, "y": 0.5 }
+    }
+  }
+}

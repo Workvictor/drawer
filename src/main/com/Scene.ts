@@ -9,6 +9,8 @@ export class Scene {
 
   protected renderer: Renderer;
 
+  protected loaded: boolean = false;
+
   name: Scenes;
 
   get width() {
@@ -19,7 +21,11 @@ export class Scene {
     return this.renderer.height;
   }
 
-  onLoad = () => {};
+  init = () => {};
+
+  onLoad = () => {
+    this.loaded = true;
+  };
 
   resize = (w: number, h: number) => {
     this.renderer.resize(w, h);
