@@ -1,5 +1,7 @@
 export const text = {
-  newGame: 'New Game',
+  newGame: 'New game',
+  options: 'options',
+  loadGame: 'Load game',
   mainMenu: 'Main menu',
   loading: 'Loading...'
 };

@@ -10,6 +10,8 @@ type PivotPosition =
   | 'bottom-center';
 
 export class DisplayObject extends Drawer {
+  debug: boolean = false;
+
   protected _mouseController = mouseController;
 
   private _children: DisplayObject[] = [];
@@ -51,6 +53,12 @@ export class DisplayObject extends Drawer {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    if (this.debug) {
+      this.ctx.save();
+      this.ctx.strokeStyle = '#4ae338';
+      this.ctx.strokeRect(0, 0, this.width, this.height);
+      this.ctx.restore();
+    }
     this._children.forEach(child => {
       child.draw(this.ctx);
     });

@@ -1,36 +1,49 @@
 import { atlas } from 'main/main';
 import { Vector2 } from 'main/com/Vector2';
 import { DisplayObject } from 'main/com/DisplayObject';
-import { createCanvas } from 'main/utils/createCanvas';
 import { DisplayFont } from 'main/com/DisplayFont';
+import { Drawer } from 'main/com/Drawer';
+import { ContextStyle } from 'main/com/ContextStyle';
 
 export class Button extends DisplayObject {
   constructor(text: string) {
     super(0, 0);
     this._mouseController.subscribe('move', this.onMouseMove);
     this._mouseController.subscribe('touch', this.onTouch);
-    this._mouseController.subscribe('click', this.onClick);
+    this._mouseController.subscribe('click', this._onClick);
 
     const fontSize = 32;
+    const textStyle = new ContextStyle({
+      fillStyle: '#100f0f'
+    });
+    textStyle.displayFont = new DisplayFont({size: fontSize, weight: 700});
 
-    this.resize(this.button.normal.width, this.button.normal.height);
+    const { width, height } = this.button.normal;
 
-    this.text = createCanvas(
-      this.button.normal.width,
-      this.button.normal.height
-    ).getContext('2d')!;
-    this.text.font = new DisplayFont({ size: fontSize, weight: 700 }).font;
-    this.text.fillStyle = '#100f0f';
-    this.text.textAlign = 'center';
-    this.text.textBaseline = 'middle';
-    this.text.fillText(
-      text,
-      Math.floor(this.button.normal.width / 2),
-      Math.floor(this.button.normal.height / 2)
-    );
+    this.resize(width, height);
+
+    const textPosition = this.center.xy;
+
+    const textNormal = new Drawer(this.width, this.height);
+    textNormal.style = textStyle;
+    textNormal.ctx.fillText(text, ...textPosition);
+
+    const textPressed = new Drawer(this.width, this.height);
+    textPressed.style = textStyle;
+    textPressed.ctx.fillText(text, textPosition[0], textPosition[1] + 5);
+
+    this.textMap = {
+      normal: textNormal.canvas,
+      hover: textNormal.canvas,
+      pressed: textPressed.canvas,
+    };
   }
 
-  text: CanvasRenderingContext2D;
+  textMap: {
+    normal: HTMLCanvasElement;
+    pressed: HTMLCanvasElement;
+    hover: HTMLCanvasElement;
+  };
 
   button = {
     hover: atlas.getElement('buttonHover').imageData,
@@ -40,25 +53,22 @@ export class Button extends DisplayObject {
 
   update(t: number) {
     if (this.shouldUpdate) {
-      if (this.parent) {
-        this.parent.shouldUpdate = true
-      }
       this.clear();
       this.ctx.drawImage(this.button[this.state], 0, 0);
-      this.ctx.drawImage(this.text.canvas, 0, 0);
+      this.ctx.drawImage(this.textMap[this.state], 0, 0);
       this.shouldUpdate = false;
     }
   }
 
   private state: 'hover' | 'pressed' | 'normal' = 'normal';
 
-  private prevState: 'hover' | 'pressed' | 'normal' = this.state;
+  onClick() {}
 
-  private onClick = (position: Vector2) => {
+  private _onClick = (position: Vector2) => {
     if (this.collides(position) && this.state === 'pressed') {
-      console.log('Button clicked !!!');
       this.state = 'normal';
       this.shouldUpdate = true;
+      this.onClick();
     }
   };
 
@@ -70,7 +80,11 @@ export class Button extends DisplayObject {
   };
 
   private onMouseMove = (position: Vector2) => {
-    if (this.collides(position) && this.state !== 'pressed' && this.state !== 'hover') {
+    if (
+      this.collides(position) &&
+      this.state !== 'pressed' &&
+      this.state !== 'hover'
+    ) {
       this.state = 'hover';
       this.shouldUpdate = true;
       return;

@@ -7,6 +7,10 @@ export class Drawer {
     this.ctx = createCanvas(w, h).getContext('2d')!;
   }
 
+  private static _getEvenNum(value: number) {
+    return value % 2 === 0 ? value : Math.floor(value / 2) * 2;
+  }
+
   ctx: CanvasRenderingContext2D;
 
   private _contextStyle: ContextStyle = new ContextStyle();
@@ -32,20 +36,9 @@ export class Drawer {
     return this.ctx.canvas.height;
   }
 
-  debug(color = '#4ae338') {
-    this.ctx.save();
-    this.ctx.strokeStyle = color;
-    this.ctx.strokeRect(0, 0, this.width, this.height);
-    this.ctx.restore();
-  }
-
-  private _getEvenNum(value: number) {
-    return value % 2 === 0 ? value : Math.floor(value / 2) * 2;
-  }
-
   resize(w: number, h: number) {
-    this.ctx.canvas.width = this._getEvenNum(w);
-    this.ctx.canvas.height = this._getEvenNum(h);
+    this.ctx.canvas.width = Drawer._getEvenNum(w);
+    this.ctx.canvas.height = Drawer._getEvenNum(h);
     this.style = this._contextStyle;
   }
 

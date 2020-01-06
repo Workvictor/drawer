@@ -6,74 +6,74 @@ export type Scenes = 'loading' | 'menu' | 'options' | 'game';
 
 export class SceneController {
   constructor(root: HTMLElement = document.body) {
-    this._renderer = new Drawer(window.innerWidth, window.innerHeight);
-    this.initRenderer(root);
+    this.drawer = new Drawer(window.innerWidth, window.innerHeight);
+    this.root = root;
 
     // TODO load scene as ES6 module
     scenes.forEach(IScene => {
-      this._scenes.push(
-        new IScene(this._renderer.width, this._renderer.height)
-      );
+      const scene = new IScene(this.drawer.width, this.drawer.height);
+      this.scenes.push(scene);
     });
+
+    this.scene = this.scenes[0];
   }
 
-  private _renderer: Drawer;
+  private drawer: Drawer;
 
-  private _scenes: Scene[] = [];
+  private scenes: Scene[] = [];
 
-  private _scene?: Scene;
+  private scene: Scene;
 
-  private _isRunning = false;
+  private isRunning = false;
 
-  private _rafID = 0;
+  private rafID = 0;
 
   private _activeScene?: Scenes;
 
   set activeScene(scene: Scenes) {
     this._activeScene = scene;
-    this._scene = this._scenes.find(item => item.name === this._activeScene);
-    if (this._scene) {
-      this._scene.onLoad();
-      this._scene.init();
-    }
+    this.scene.unload();
+    this.scene =
+      this.scenes.find(item => item.name === this._activeScene) || this.scene;
+    this.scene.load();
   }
 
   loadScene = () => {
     // TODO load scene as ES6 module
   };
 
-  initRenderer = (root: HTMLElement) => {
-    this._renderer.ctx.canvas.classList.add('renderer');
-    root.appendChild(this._renderer.ctx.canvas);
+  set root(root: HTMLElement) {
+    this.drawer.ctx.canvas.classList.add('renderer');
+    root.appendChild(this.drawer.ctx.canvas);
     const resize = () => {
-      this._renderer.resize(window.innerWidth, window.innerHeight);
-      this._scenes.forEach(scene => {
+      this.drawer.resize(window.innerWidth, window.innerHeight);
+      this.scenes.forEach(scene => {
         scene.resize(window.innerWidth, window.innerHeight);
       });
     };
     window.addEventListener('resize', resize);
-  };
+  }
 
   start = () => {
-    this._isRunning = true;
+    this.isRunning = true;
     this.update();
   };
 
   stop = () => {
-    this._isRunning = false;
+    this.isRunning = false;
   };
 
-  update = (t?: number) => {
-    if (this._scene && t) {
-      this._scene.update(t);
-      if(this._scene.shouldUpdate){
-        this._scene.draw(this._renderer.ctx);
+  update = (t: number = 0) => {
+    if (this.scenes.length > 0) {
+      this.scene.update(t);
+      if (this.scene.shouldUpdate) {
+        this.scene.draw(this.drawer.ctx);
       }
     }
-    if (this._isRunning) {
-      this._rafID = window.requestAnimationFrame(this.update);
+    if (this.isRunning) {
+      this.rafID = window.requestAnimationFrame(this.update);
     } else {
-      window.cancelAnimationFrame(this._rafID);
+      window.cancelAnimationFrame(this.rafID);
     }
   };
 }
