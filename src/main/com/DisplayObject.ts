@@ -1,5 +1,6 @@
-import { Renderer } from 'main/com/Renderer';
 import { Vector2 } from 'main/com/Vector2';
+import { Drawer } from 'main/com/Drawer';
+import { mouseController } from 'main/main';
 
 type PivotPosition =
   | 'center'
@@ -8,21 +9,19 @@ type PivotPosition =
   | 'top-right'
   | 'bottom-center';
 
-export class DisplayObject {
-  constructor(w: number, h: number) {
-    this.renderer = new Renderer(w, h);
-  }
+export class DisplayObject extends Drawer {
+  protected _mouseController = mouseController;
 
   private _children: DisplayObject[] = [];
 
-  private _parent?: DisplayObject;
+  private _parent: DisplayObject | null = null;
 
   private _shouldUpdate = true;
 
   set shouldUpdate(state: boolean) {
     this._shouldUpdate = state;
-    if (this.parent) {
-      this.parent.shouldUpdate = state;
+    if (this._parent) {
+      this._parent.shouldUpdate = state;
     }
   }
 
@@ -30,82 +29,55 @@ export class DisplayObject {
     return this._shouldUpdate;
   }
 
-  get parent() {
-    return this._parent;
-  }
-
-  renderer: Renderer;
-
-  setParent = (parent: DisplayObject) => {
+  set parent(parent: DisplayObject | null) {
     this._parent = parent;
-  };
-
-  get ctx() {
-    return this.renderer.ctx;
-  }
-
-  get canvas() {
-    return this.renderer.canvas;
-  }
-
-  get width() {
-    return this.renderer.width;
-  }
-
-  get height() {
-    return this.renderer.height;
   }
 
   /**
    * children will recalculate there position independently, relying parent position
    */
-  moveTo = (position: Vector2) => {
+  moveTo(position: Vector2) {
     this._position = position;
     this._shouldUpdate = true;
-  };
+  }
 
-  onUpdate = (t: number) => {
-    if (this._shouldUpdate) {
-      // this.renderer.clear();
-      this._shouldUpdate = false;
-      this._children.forEach(child => {
-        child.onUpdate(t);
-      });
-    }
-  };
+  update(t: number) {
+    this._children.forEach(child => {
+      child.update(t);
+      if (child.shouldUpdate) {
+        this.shouldUpdate = true;
+      }
+    });
+  }
 
-  draw = (ctx: CanvasRenderingContext2D) => {
+  draw(ctx: CanvasRenderingContext2D) {
     this._children.forEach(child => {
       child.draw(this.ctx);
     });
-    ctx.drawImage(this.canvas, ...this.position.xy);
-  };
+    const {
+      width,
+      height,
+      position: { x, y }
+    } = this;
+    ctx.drawImage(this.canvas, 0, 0, width, height, x, y, width, height);
+    this._shouldUpdate = false;
+  }
 
-  resize = (w: number, h: number) => {
-    this._shouldUpdate = true;
-    this.renderer.resize(w, h);
-    this._children.forEach(child => {
-      child.resize(w, h);
-    });
-  };
-
-  addChild = (...children: DisplayObject[]) => {
+  /*
+   * add children
+   */
+  add(...children: DisplayObject[]) {
     children.forEach(child => {
-      child.setParent(this);
+      child.parent = this;
       this._children.push(child);
     });
-    // if (Array.isArray(children)) {
-    // }
-    this._shouldUpdate = true;
-    // children.setParent(this);
-    // this._children.push(children);
-  };
+  }
 
   /**
    * check if position is laying transform rect
    * @param position
    */
-  collides = (position: Vector2) => {
+  collides(position: Vector2) {
     const pos = this.globalPosition;
     return (
       position.x >= pos.x &&
@@ -113,7 +85,7 @@ export class DisplayObject {
       position.y >= pos.y &&
       position.y <= pos.y + this.height
     );
-  };
+  }
 
   /**
    * global position is for handling mouse client position
@@ -129,15 +101,15 @@ export class DisplayObject {
 
   private _position: Vector2 = new Vector2(0, 0);
 
-  getBoundsPosition = (pivot: PivotPosition) => {
+  private _getBoundsPosition(pivot: PivotPosition) {
     const pivotPosition = this._pivotPosition(pivot);
     return new Vector2(
       this._position.x + pivotPosition.x,
       this._position.y + pivotPosition.y
     );
-  };
+  }
 
-  private _pivotPosition = (pivot: PivotPosition) => {
+  private _pivotPosition(pivot: PivotPosition) {
     switch (pivot) {
       case 'top-right':
         return new Vector2(this.width, 0);
@@ -151,10 +123,10 @@ export class DisplayObject {
         // center
         return new Vector2(this.width / 2, this.height / 2);
     }
-  };
+  }
 
   get bottom() {
-    return this.getBoundsPosition('bottom-center')
+    return this._getBoundsPosition('bottom-center');
   }
 
   get position() {

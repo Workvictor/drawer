@@ -1,9 +1,6 @@
 import './index.css';
 
 import { SceneController } from 'main/SceneController';
-import { Renderer } from 'main/com/Renderer';
-import { TextStyle } from 'main/com/TextStyle';
-import { DisplayFont } from 'main/com/DisplayFont';
 import { MouseController } from 'main/com/MouseController';
 import { Atlas } from 'main/atlas/Atlas';
 
@@ -13,32 +10,25 @@ const atlas = new Atlas();
 
 export { mouseController, atlas };
 
-export function main(root: HTMLElement) {
-  const displayFont = new DisplayFont();
-  const textStyle = new TextStyle({
-    font: displayFont.font
-  });
+export function main() {
+  const root = document.getElementById('root')!;
 
-  Renderer.global = {
-    textStyle,
-    displayFont
-  };
-
-  const sceneController = new SceneController(new Renderer(), root);
+  const sceneController = new SceneController(root);
   sceneController.activeScene = 'loading';
   sceneController.start();
 
-  atlas.load('buttons').then(()=>{
-    console.table(atlas.elements);
+  atlas.load('buttons').then(() => {
+    if (window.location.hostname === 'localhost') {
+      console.log('atlas', atlas.elements);
+    }
     sceneController.activeScene = 'menu';
   });
-
 
   // TODO make InputController class
   const cheatcode = 'cheatcode';
   let input = '';
   const onKeyDown = (e: KeyboardEvent) => {
-    e.preventDefault();
+    // e.preventDefault();
     console.log(e);
     console.log(cheatcode[input.length] === e.key);
     if (cheatcode[input.length] === e.key) {
@@ -47,13 +37,13 @@ export function main(root: HTMLElement) {
       input = '';
     }
     if (input === cheatcode) {
-      console.log('cheatcode activated');
+      console.log('cheatcode');
     }
   };
 
   const onContextMenu = (e: MouseEvent) => {
     e.preventDefault();
-    console.log(e);
+    console.log('onContextMenu', e);
   };
 
   window.addEventListener('keydown', onKeyDown);

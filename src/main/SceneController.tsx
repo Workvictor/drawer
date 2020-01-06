@@ -1,12 +1,12 @@
-import { Renderer } from 'main/com/Renderer';
 import { Scene } from 'main/com/Scene';
 import { scenes } from 'main/scenes';
+import { Drawer } from 'main/com/Drawer';
 
 export type Scenes = 'loading' | 'menu' | 'options' | 'game';
 
 export class SceneController {
-  constructor(renderer: Renderer, root: HTMLElement = document.body) {
-    this._renderer = renderer;
+  constructor(root: HTMLElement = document.body) {
+    this._renderer = new Drawer(window.innerWidth, window.innerHeight);
     this.initRenderer(root);
 
     // TODO load scene as ES6 module
@@ -17,7 +17,7 @@ export class SceneController {
     });
   }
 
-  private _renderer: Renderer;
+  private _renderer: Drawer;
 
   private _scenes: Scene[] = [];
 
@@ -66,7 +66,9 @@ export class SceneController {
   update = (t?: number) => {
     if (this._scene && t) {
       this._scene.update(t);
-      this._scene.draw(this._renderer.ctx);
+      if(this._scene.shouldUpdate){
+        this._scene.draw(this._renderer.ctx);
+      }
     }
     if (this._isRunning) {
       this._rafID = window.requestAnimationFrame(this.update);

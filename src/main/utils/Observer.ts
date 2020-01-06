@@ -1,4 +1,4 @@
-type Subscriber<Data> = (data: Data) => void;
+export type Subscriber<Data> = (data: Data) => void;
 
 export class Observer<Data> {
   protected observers: Array<Subscriber<Data>> = [];
@@ -7,7 +7,6 @@ export class Observer<Data> {
     if (fn) {
       this.observers.push(fn);
     }
-    return this;
   };
 
   destroy = () => {
@@ -16,7 +15,6 @@ export class Observer<Data> {
 
   unsubscribe = (fn: Subscriber<Data>) => {
     this.observers = this.observers.filter(i => i !== fn);
-    return this;
   };
 
   broadcast = (data: Data) => {

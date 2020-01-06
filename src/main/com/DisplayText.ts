@@ -18,23 +18,22 @@ export class DisplayText extends DisplayObject {
   init = (props: IDisplayText) => {
     const {
       text,
-      fontSize = this.renderer.fontSize,
+      fontSize = this.style.fontSize,
       linePadding = 0,
       textPadding = [0],
-      color = this.renderer.ctx.fillStyle,
+      color = this.ctx.fillStyle,
       wrapWidth
     } = props;
 
-    this.renderer.ctx.fillStyle = color;
+    this.ctx.fillStyle = color;
 
     // one line text
     if (wrapWidth === 0) {
-      this.renderer.resize(
-        textPadding[0] * 2 + Math.floor(this.renderer.ctx.measureText(text).width),
+      this.resize(
+        textPadding[0] * 2 + Math.floor(this.ctx.measureText(text).width),
         (textPadding[1] || textPadding[0]) * 2 + fontSize
       );
-      this.resize(this.renderer.width, this.renderer.height);
-      this.renderer.ctx.fillText(text, textPadding[0], textPadding[1] || textPadding[0]);
+      this.ctx.fillText(text, textPadding[0], textPadding[1] || textPadding[0]);
       return;
     }
 
@@ -48,7 +47,7 @@ export class DisplayText extends DisplayObject {
     while (i <= words.length) {
       line.push(words[i]);
 
-      const { width } = this.renderer.ctx.measureText(line.join(' '));
+      const { width } = this.ctx.measureText(line.join(' '));
 
       if (width > wrapWidth) {
         i--;
@@ -61,10 +60,9 @@ export class DisplayText extends DisplayObject {
       i++;
     }
 
-    this.renderer.resize(wrapWidth, lines.length * lineHeight - linePadding);
-    this.resize(this.renderer.width, this.renderer.height);
+    this.resize(wrapWidth, lines.length * lineHeight - linePadding);
     lines.forEach((line, index) => {
-      this.renderer.ctx.fillText(
+      this.ctx.fillText(
         line,
         textPadding[0],
         textPadding[1] || textPadding[0] + index * lineHeight

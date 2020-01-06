@@ -1,51 +1,16 @@
 export class DisplayFont {
-  private style = 'normal';
-  private variant = 'normal';
-  private weight = 400;
-  private stretch = 'normal';
-  size: number = 16;
-  lineHeight: number = 1;
-  family: string[] = ['Arial', 'sans-serif'];
-
-  linePadding: number = 4;
-  static PX(value: number) {
-    return `${value}px`;
+  constructor(style?: Partial<DisplayFont>) {
+    if (style) {
+      Object.assign(this, style);
+    }
   }
+  weight = 400;
 
-  readonly font: string;
+  size = 16;
 
-  constructor(style: Partial<DisplayFont> = {}) {
-    Object.assign(this, style);
-    this.font = [
-      this.style,
-      this.variant,
-      this.weight,
-      this.stretch,
-      `${DisplayFont.PX(this.size)} / ${this.lineHeight}`,
-      this.family
-    ].join(' ');
+  private family: string[] = ['Arial', 'sans-serif'];
+
+  get font() {
+    return [this.weight, `${this.size}px`, this.family.join(', ')].join(' ');
   }
-
-  get height() {
-    return this.size * this.lineHeight;
-  }
-
-  parse = (fontLiteral: string) => {
-    const [
-      style,
-      variant,
-      weight,
-      stretch,
-      ...[size, _, lineHeight, ...family]
-    ] = fontLiteral.split(' ');
-    return {
-      style,
-      variant,
-      weight,
-      stretch,
-      size,
-      lineHeight,
-      family: family.join(' ')
-    };
-  };
 }

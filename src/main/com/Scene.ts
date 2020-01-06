@@ -1,39 +1,32 @@
 import { Scenes } from 'main/SceneController';
-import { Renderer } from './Renderer';
+import { Drawer } from 'main/com/Drawer';
+import { DisplayObject } from 'main/com/DisplayObject';
 
-export class Scene {
+export class Scene extends Drawer {
   constructor(name: Scenes, w: number, h: number) {
+    super(w, h);
     this.name = name;
-    this.renderer = new Renderer(w, h);
   }
 
-  protected renderer: Renderer;
+  // container: DisplayObject;
+
+  shouldUpdate = true;
 
   protected loaded: boolean = false;
 
   name: Scenes;
 
-  get width() {
-    return this.renderer.width;
-  }
+  init() {}
 
-  get height() {
-    return this.renderer.height;
-  }
-
-  init = () => {};
-
-  onLoad = () => {
+  onLoad() {
     this.loaded = true;
-  };
+  }
 
-  resize = (w: number, h: number) => {
-    this.renderer.resize(w, h);
-  };
+  update(t: number) {}
 
-  update = (t: number) => {};
-
-  draw = (ctx: CanvasRenderingContext2D) => {
-    ctx.drawImage(this.renderer.canvas, 0, 0);
-  };
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(this.canvas, 0, 0);
+    console.log('Scene draw');
+    this.shouldUpdate = false;
+  }
 }
