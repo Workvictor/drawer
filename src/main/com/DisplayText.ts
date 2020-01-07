@@ -1,72 +1,128 @@
 import { DisplayObject } from './DisplayObject';
+import { Vector2 } from 'main/com/Vector2';
+import { ContextStyle } from 'main/com/Drawer';
+import { DisplayFont } from 'main/com/DisplayFont';
 
-interface IDisplayText {
+interface IDisplayText extends ContextStyle {
   text: string;
   wrapWidth: number;
-  fontSize?: number;
-  linePadding?: number;
-  textPadding?: [number] | [number, number];
-  color?: string | CanvasGradient | CanvasPattern;
+  // font
+  size: number;
+  weight: number;
+  linePadding: number;
+  textPadding: [number] | [number, number];
 }
 
 export class DisplayText extends DisplayObject {
-  constructor(props: IDisplayText) {
+  constructor(private readonly props: Partial<IDisplayText>) {
     super(0, 0);
-    this.init(props);
+    this.InitStyle();
+
+    const { wrapWidth } = this;
+
+    if (wrapWidth > 0) {
+      const lines = this.CalculateLines();
+      this.DrawMultilineText(lines);
+    }
+
+    if (wrapWidth === 0) {
+      this.DrawOneLineText();
+    }
   }
 
-  init = (props: IDisplayText) => {
-    const {
-      text,
-      fontSize = this.style.fontSize,
-      linePadding = 0,
-      textPadding = [0],
-      color = this.ctx.fillStyle,
-      wrapWidth
-    } = props;
+  CalculateLines() {
+    const { padding, text, wrapWidth } = this;
+    const fitWidth = wrapWidth - padding.x * 2;
+    const words = text.split(' ');
+    const line = [words[0]];
+    const lines: string[] = [];
 
-    this.ctx.fillStyle = color;
-
-    // one line text
-    if (wrapWidth === 0) {
-      this.resize(
-        textPadding[0] * 2 + Math.floor(this.ctx.measureText(text).width),
-        (textPadding[1] || textPadding[0]) * 2 + fontSize
-      );
-      this.ctx.fillText(text, textPadding[0], textPadding[1] || textPadding[0]);
-      return;
+    for (let i = 1; i < words.length; i++) {
+      const lineString = line.join(' ');
+      const nextWord = words[i];
+      const { width } = this.ctx.measureText(lineString + nextWord);
+      if (width > fitWidth) {
+        lines.push(lineString);
+        line.length = 0;
+      }
+      if (i === words.length - 1) {
+        lines.push(nextWord);
+      }
+      line.push(nextWord);
     }
 
-    const lineHeight = linePadding + fontSize;
+    return lines;
+  }
 
-    let i = 0;
-    let words = text.split(' ');
-    let line: string[] = [];
-    let lines: string[] = [];
+  DrawMultilineText(lines: string[]) {
+    const { padding, lineHeight, linePadding, wrapWidth, ctx } = this;
+    this.Resize(wrapWidth, lines.length * lineHeight - linePadding + padding.y * 2);
 
-    while (i <= words.length) {
-      line.push(words[i]);
+    ctx.save();
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
 
-      const { width } = this.ctx.measureText(line.join(' '));
-
-      if (width > wrapWidth) {
-        i--;
-        lines.push(line.slice(0, -1).join(' '));
-        line = [];
-      }
-      if (i === words.length) {
-        lines.push(line.slice(0, -1).join(' '));
-      }
-      i++;
-    }
-
-    this.resize(wrapWidth, lines.length * lineHeight - linePadding);
     lines.forEach((line, index) => {
-      this.ctx.fillText(
-        line,
-        textPadding[0],
-        textPadding[1] || textPadding[0] + index * lineHeight
-      );
+      ctx.fillText(line, padding.x, padding.y + index * lineHeight);
     });
-  };
+
+    ctx.restore();
+  }
+
+  private get padding() {
+    const { textPadding = [4] } = this.props;
+    return new Vector2(textPadding[1] || textPadding[0], textPadding[0]);
+  }
+
+  private get linePadding() {
+    const { linePadding = 0 } = this.props;
+    return linePadding;
+  }
+
+  private get wrapWidth() {
+    const { wrapWidth = 0 } = this.props;
+    return wrapWidth;
+  }
+
+  private get text() {
+    const { text = '' } = this.props;
+    return text;
+  }
+
+  private get lineHeight() {
+    const { displayFont, linePadding, ctx } = this;
+    const { shadowBlur, shadowOffsetY } = ctx;
+    const fontSize = displayFont.size;
+    return fontSize + linePadding + shadowBlur + Math.abs(shadowOffsetY);
+  }
+
+  private DrawOneLineText() {
+    const { padding, lineHeight, linePadding, text, ctx } = this;
+    this.Resize(
+      padding.x * 2 + Math.floor(ctx.measureText(text).width),
+      padding.y * 2 + lineHeight - linePadding
+    );
+    ctx.fillText(text, ...this.GetAnchorPosition('center').xy);
+  }
+
+  private InitStyle() {
+    const {
+      size = 16,
+      weight = 400,
+      fillStyle = '#100f0f',
+      shadowBlur = 2,
+      shadowOffsetY = 0,
+      shadowColor = '#333'
+    } = this.props;
+
+    this.displayFont = new DisplayFont(size, weight);
+
+    this.SetContext({
+      fillStyle,
+      shadowBlur,
+      shadowOffsetY,
+      shadowColor,
+      font: this.displayFont.GetFontAsString()
+    });
+  }
 }

@@ -11,8 +11,8 @@ const atlas = new Atlas();
 export { mouseController, atlas };
 
 export function main() {
-  const root = document.getElementById('root')!;
 
+  const root = document.getElementById('root')!;
   const sceneController = new SceneController(root);
   sceneController.activeScene = 'loading';
   sceneController.start();
@@ -23,6 +23,7 @@ export function main() {
     }
     sceneController.activeScene = 'menu';
   });
+
 
   // TODO make InputController class
   const cheatcode = 'cheatcode';

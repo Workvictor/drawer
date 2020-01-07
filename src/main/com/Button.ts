@@ -1,9 +1,8 @@
 import { atlas } from 'main/main';
 import { Vector2 } from 'main/com/Vector2';
 import { DisplayObject } from 'main/com/DisplayObject';
+import { ContextStyle, Drawer } from 'main/com/Drawer';
 import { DisplayFont } from 'main/com/DisplayFont';
-import { Drawer } from 'main/com/Drawer';
-import { ContextStyle } from 'main/com/ContextStyle';
 
 export class Button extends DisplayObject {
   constructor(text: string) {
@@ -12,30 +11,34 @@ export class Button extends DisplayObject {
     this._mouseController.subscribe('touch', this.onTouch);
     this._mouseController.subscribe('click', this._onClick);
 
-    const fontSize = 32;
-    const textStyle = new ContextStyle({
-      fillStyle: '#100f0f'
-    });
-    textStyle.displayFont = new DisplayFont({size: fontSize, weight: 700});
+    this.displayFont = new DisplayFont(32, 700);
+
+    const style: Partial<ContextStyle> = {
+      font: this.displayFont.GetFontAsString(),
+      fillStyle: '#333',
+      shadowBlur: 1,
+      shadowOffsetY: 1,
+      shadowColor: '#fff',
+    };
 
     const { width, height } = this.button.normal;
 
-    this.resize(width, height);
+    this.Resize(width, height);
 
-    const textPosition = this.center.xy;
+    const textPosition = this.GetAnchorPosition('center').xy;
 
     const textNormal = new Drawer(this.width, this.height);
-    textNormal.style = textStyle;
+    textNormal.SetContext(style);
     textNormal.ctx.fillText(text, ...textPosition);
 
     const textPressed = new Drawer(this.width, this.height);
-    textPressed.style = textStyle;
+    textPressed.SetContext(style);
     textPressed.ctx.fillText(text, textPosition[0], textPosition[1] + 5);
 
     this.textMap = {
       normal: textNormal.canvas,
       hover: textNormal.canvas,
-      pressed: textPressed.canvas,
+      pressed: textPressed.canvas
     };
   }
 

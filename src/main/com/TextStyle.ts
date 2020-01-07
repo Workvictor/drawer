@@ -1,7 +1,7 @@
 import { DisplayFont } from 'main/com/DisplayFont';
 
 export class TextStyle {
-  font = new DisplayFont().font;
+  font = new DisplayFont().GetFontAsString();
   imageSmoothingEnabled = false;
   direction: CanvasDirection = 'inherit';
   textAlign: CanvasTextAlign = 'center';

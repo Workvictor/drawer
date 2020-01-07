@@ -6,7 +6,7 @@ export class Scene extends Drawer {
   constructor(w: number, h: number) {
     super(w, h);
     this.container = new DisplayObject(w, h);
-    this.container.moveTo(this.center);
+    this.container.moveTo(this.GetAnchorPosition('center'));
     this.init();
   }
 
@@ -18,14 +18,16 @@ export class Scene extends Drawer {
 
   name?: Scenes;
 
-  resize(w: number, h: number) {
-    super.resize(w, h);
-    this.container.moveTo(this.center);
+  Resize(w: number, h: number) {
+    super.Resize(w, h);
+    this.load();
+    this.container.moveTo(this.GetAnchorPosition('center'));
   }
 
   init() {}
 
   load() {
+    this.shouldUpdate = true;
     this.loaded = true;
   }
 

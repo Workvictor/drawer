@@ -1,16 +1,24 @@
 export class DisplayFont {
-  constructor(style?: Partial<DisplayFont>) {
-    if (style) {
-      Object.assign(this, style);
-    }
+  constructor(fontSizeInPixels?: number, weight?: number) {
+    this.SetWeight(weight);
+    this.SetFontSizeInPixels(fontSizeInPixels);
   }
+
   weight = 400;
 
   size = 16;
 
   private family: string[] = ['Arial', 'sans-serif'];
 
-  get font() {
+  SetFontSizeInPixels(value: number = this.size) {
+    this.size = value;
+  }
+
+  SetWeight(value: number = this.weight) {
+    this.weight = value;
+  }
+
+  GetFontAsString() {
     return [this.weight, `${this.size}px`, this.family.join(', ')].join(' ');
   }
 }

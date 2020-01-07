@@ -28,13 +28,10 @@ export class SceneController {
 
   private rafID = 0;
 
-  private _activeScene?: Scenes;
-
   set activeScene(scene: Scenes) {
-    this._activeScene = scene;
     this.scene.unload();
     this.scene =
-      this.scenes.find(item => item.name === this._activeScene) || this.scene;
+      this.scenes.find(item => item.name === scene) || this.scene;
     this.scene.load();
   }
 
@@ -46,10 +43,8 @@ export class SceneController {
     this.drawer.ctx.canvas.classList.add('renderer');
     root.appendChild(this.drawer.ctx.canvas);
     const resize = () => {
-      this.drawer.resize(window.innerWidth, window.innerHeight);
-      this.scenes.forEach(scene => {
-        scene.resize(window.innerWidth, window.innerHeight);
-      });
+      this.drawer.Resize(window.innerWidth, window.innerHeight);
+      this.scene.Resize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener('resize', resize);
   }
