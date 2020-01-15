@@ -14,7 +14,7 @@ export class Menu extends Scene {
   load() {
     super.load();
     const { width, height } = this.container;
-    const center= this.container.GetAnchorPosition('center');
+    const center = this.container.GetAnchorPosition('center');
 
     const frame = new Frame(width, height);
 
@@ -24,16 +24,20 @@ export class Menu extends Scene {
       size: 32,
       weight: 700
     });
-    title.pivot = 'top-center';
+    title.SetPivotPosition('top-center');
     title.moveTo(this.container.GetAnchorPosition('top-center'));
 
     const newGameButton = new Button(text.newGame);
-    newGameButton.pivot = 'top-center';
-    newGameButton.moveTo(new Vector2(center.x, title.position.y + title.height));
+    newGameButton.SetPivotPosition('top-center');
+    newGameButton.moveTo(
+      new Vector2(center.x, title.position.y + title.height)
+    );
 
     const optionsButton = new Button(text.options);
-    optionsButton.pivot = 'top-center';
-    optionsButton.moveTo(new Vector2(center.x, newGameButton.position.y + newGameButton.height));
+    optionsButton.SetPivotPosition('top-center');
+    optionsButton.moveTo(
+      new Vector2(center.x, newGameButton.position.y + newGameButton.height)
+    );
 
     this.container.add(frame, title, newGameButton, optionsButton);
 

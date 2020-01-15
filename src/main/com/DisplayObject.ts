@@ -105,7 +105,7 @@ export class DisplayObject extends Drawer {
     return new Vector2(...this.position.xy);
   }
 
-  private _pivot: PivotPosition = 'center';
+  private pivot: PivotPosition = 'center';
 
   private _position: Vector2 = new Vector2(0, 0);
 
@@ -133,19 +133,15 @@ export class DisplayObject extends Drawer {
     }
   }
 
-  get bottom() {
-    return this._getBoundsPosition('bottom-center');
-  }
-
   get position() {
-    const pivotPosition = this._pivotPosition(this._pivot);
+    const pivotPosition = this._pivotPosition(this.pivot);
     return new Vector2(
       this._position.x - pivotPosition.x,
       this._position.y - pivotPosition.y
     );
   }
 
-  set pivot(position: PivotPosition) {
-    this._pivot = position;
+  SetPivotPosition(position: PivotPosition){
+    this.pivot = position;
   }
 }

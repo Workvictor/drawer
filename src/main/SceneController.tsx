@@ -28,10 +28,11 @@ export class SceneController {
 
   private rafID = 0;
 
+  private deltaTime = Date.now();
+
   set activeScene(scene: Scenes) {
     this.scene.unload();
-    this.scene =
-      this.scenes.find(item => item.name === scene) || this.scene;
+    this.scene = this.scenes.find(item => item.name === scene) || this.scene;
     this.scene.load();
   }
 
@@ -51,6 +52,7 @@ export class SceneController {
 
   start = () => {
     this.isRunning = true;
+    this.deltaTime = Date.now();
     this.update();
   };
 
@@ -58,17 +60,24 @@ export class SceneController {
     this.isRunning = false;
   };
 
-  update = (t: number = 0) => {
-    if (this.scenes.length > 0) {
-      this.scene.update(t);
-      if (this.scene.shouldUpdate) {
-        this.scene.draw(this.drawer.ctx);
-      }
+  update = () => {
+      window.cancelAnimationFrame(this.rafID);
+
+    if (!this.scene) {
+      return
     }
+
+    this.deltaTime = Date.now() - this.deltaTime;
+
+    console.log('deltaTime', this.deltaTime)
+
+    this.scene.update(this.deltaTime);
+    if (this.scene.shouldUpdate) {
+      this.scene.draw(this.drawer.ctx);
+    }
+
     if (this.isRunning) {
       this.rafID = window.requestAnimationFrame(this.update);
-    } else {
-      window.cancelAnimationFrame(this.rafID);
     }
   };
 }

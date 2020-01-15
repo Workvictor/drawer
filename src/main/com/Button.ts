@@ -84,9 +84,7 @@ export class Button extends DisplayObject {
 
   private onMouseMove = (position: Vector2) => {
     if (
-      this.collides(position) &&
-      this.state !== 'pressed' &&
-      this.state !== 'hover'
+      this.collides(position) && this.state === 'normal'
     ) {
       this.state = 'hover';
       this.shouldUpdate = true;
